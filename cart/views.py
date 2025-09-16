@@ -60,3 +60,24 @@ def purchase(request):
     template_data['title'] = 'Purchase confirmation'
     template_data['order_id'] = order.id
     return render(request, 'cart/purchase.html', {'template_data': template_data})
+
+@login_required
+def subscription_view(request):
+    # Get all orders for the user
+    orders = Order.objects.filter(user=request.user)
+
+    # Calculate total spent across all orders
+    total_spent = sum(item.price * item.quantity for order in orders for item in order.item_set.all())
+
+    # Determine subscription level
+    if total_spent < 15:
+        subscription_level = "Basic"
+    elif total_spent < 30:
+        subscription_level = "Medium"
+    else:
+        subscription_level = "Premium"
+
+    return render(request, 'cart/subscription.html', {
+        'subscription_level': subscription_level,
+        'total_spent': total_spent
+    })
