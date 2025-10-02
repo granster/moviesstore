@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-8 mx-auto mb-3">
+        <h2>{{ template_data.petition.title }}</h2>
+        <hr />
+        <p><b>Description:</b> {{ template_data.petition.description }}</p>
+        <p><b>Submitted by:</b> {{ template_data.petition.submitted_by.username }}</p>
+        <p><b>Created at:</b> {{ template_data.petition.created_at }}</p>
+        <p><b>Votes:</b> {{ template_data.petition.votes.count }}</p>
+        {% if template_data.petition.votes.all %}
+        <p><b>Voted by:</b> {% for user in template_data.petition.votes.all %}{{ user.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <form method="POST" action="{% url 'movies.vote_petition' id=template_data.petition.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn {% if user in template_data.petition.votes.all %}btn-danger{% else %}bg-dark text-white{% endif %}">
+            {% if user in template_data.petition.votes.all %}Remove Vote{% else %}Vote{% endif %}
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
