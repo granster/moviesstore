@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Review
+from .models import Movie, Review, Petition
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 def index(request):
     search_term = request.GET.get('search')
@@ -61,3 +62,40 @@ def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
     return redirect('movies.show', id=id)
+
+def petitions_list(request):
+    petitions = Petition.objects.all().order_by('-created_at')
+    template_data = {}
+    template_data['title'] = 'Movie Petitions'
+    template_data['petitions'] = petitions
+    return render(request, 'movies/petitions.html', {'template_data': template_data})
+
+@login_required
+def create_petition(request):
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        if title and description:
+            petition = Petition(title=title, description=description, submitted_by=request.user)
+            petition.save()
+            messages.success(request, 'Petition created successfully!')
+            return redirect('movies.petitions_list')
+        else:
+            messages.error(request, 'Please fill in both title and description.')
+    return render(request, 'movies/create_petition.html')
+
+def petition_detail(request, id):
+    petition = get_object_or_404(Petition, id=id)
+    template_data = {}
+    template_data['title'] = petition.title
+    template_data['petition'] = petition
+    return render(request, 'movies/petition_detail.html', {'template_data': template_data})
+
+@login_required
+def vote_petition(request, id):
+    petition = get_object_or_404(Petition, id=id)
+    if request.user in petition.votes.all():
+        petition.votes.remove(request.user)
+    else:
+        petition.votes.add(request.user)
+    return redirect('movies.petition_detail', id=id)

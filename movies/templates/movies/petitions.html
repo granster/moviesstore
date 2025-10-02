@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col mx-auto mb-3">
+        <h2>Movie Petitions</h2>
+        <hr />
+        {% if user.is_authenticated %}
+        <p><a href="{% url 'movies.create_petition' %}" class="btn bg-dark text-white">Create New Petition</a></p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      {% for petition in template_data.petitions %}
+      <div class="col-md-4 col-lg-3 mb-2">
+        <div class="p-2 card">
+          <div class="card-body">
+            <h5 class="card-title">{{ petition.title }}</h5>
+            <p class="card-text">{{ petition.description|truncatechars:100 }}</p>
+            <p class="card-text"><small class="text-muted">By {{ petition.submitted_by.username }} on {{ petition.created_at }}</small></p>
+            <p class="card-text">Votes: {{ petition.votes.count }}</p>
+            <a href="{% url 'movies.petition_detail' id=petition.id %}" class="btn bg-dark text-white">View Details</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
