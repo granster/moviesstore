@@ -15,6 +15,14 @@ def index(request):
     template_data['movies'] = movies
     return render(request, 'movies/index.html', {'template_data': template_data})
 
+def top_comments(request):
+    top_reviews = Review.objects.select_related('movie', 'user').order_by('-date')
+
+    template_data = {}
+    template_data['title'] = 'Top Comments'
+    template_data['top_reviews'] = top_reviews
+    return render(request, 'movies/top_comments.html', {'template_data': template_data})
+
 def show(request, id):
     movie = Movie.objects.get(id=id)
     reviews = Review.objects.filter(movie=movie)

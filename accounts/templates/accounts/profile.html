@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-lg-8 mx-auto mb-3">
+        <h2>My Profile</h2>
+        <hr />
+        
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="card shadow p-4 mb-4 rounded">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 text-center mb-4 mb-md-0">
+                {% if template_data.profile.profile_picture %}
+                  <img src="{{ template_data.profile.profile_picture.url }}" 
+                       alt="Profile Picture" 
+                       class="img-fluid rounded-circle" 
+                       style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #dee2e6;">
+                {% else %}
+                  <img src="{% static 'img/logo.png' %}" 
+                       alt="Default Profile Picture" 
+                       class="img-fluid rounded-circle" 
+                       style="width: 200px; height: 200px; object-fit: cover; border: 3px solid #dee2e6;">
+                {% endif %}
+              </div>
+              <div class="col-md-8">
+                <h4 class="mb-3">{{ user.username }}</h4>
+                <p class="text-muted mb-4">
+                  <strong>Email:</strong> {{ user.email|default:"Not provided" }}<br>
+                  <strong>Member since:</strong> {{ user.date_joined|date:"F Y" }}
+                </p>
+                
+                <h5 class="mb-3">Upload Profile Picture</h5>
+                <form method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    {{ template_data.form.profile_picture }}
+                    <small class="form-text text-muted">Select an image file (JPG, PNG, etc.)</small>
+                  </div>
+                  <button type="submit" class="btn bg-dark text-white">
+                    <i class="fas fa-upload me-2"></i>Upload Picture
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+

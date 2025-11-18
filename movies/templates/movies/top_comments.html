@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-3">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-lg-8 mx-auto mb-3">
+        <h2>Top Comments</h2>
+        <p class="text-muted">A quick look at the latest reactions across all movies.</p>
+        <hr />
+      </div>
+    </div>
+    {% if template_data.top_reviews %}
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <ul class="list-group">
+          {% for review in template_data.top_reviews %}
+          <li class="list-group-item pb-3 pt-3">
+            <div class="d-flex justify-content-between flex-wrap gap-2">
+              <div>
+                <strong>{{ review.user.username }}</strong>
+                <span class="text-muted">on</span>
+                <a href="{% url 'movies.show' id=review.movie.id %}">{{ review.movie.name }}</a>
+              </div>
+              <small class="text-muted">{{ review.date }}</small>
+            </div>
+            <p class="mb-0 mt-2">{{ review.comment }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% else %}
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="alert alert-info mb-0">No comments have been posted yet.</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
+
